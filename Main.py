@@ -40,8 +40,8 @@ class Player(pygame.sprite.Sprite):
         self.image.fill(BLACK)
         self.rect = self.image.get_rect()
         self.game = game
-        self.rect.top= WIDTH / 4
-        self.rect.left= HEIGHT/4
+        self.rect.top= WIDTH / 4 +2
+        self.rect.left= HEIGHT/4 +250
         self.vx = 0
         self.vy = 0
         
