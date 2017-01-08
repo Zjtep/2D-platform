@@ -2,8 +2,8 @@
 import pygame
 import random
 
-WIDTH = 800
-HEIGHT = 600
+WIDTH = 500
+HEIGHT = 500
 FPS = 30
 
 # define colors
@@ -13,6 +13,17 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 YELLOW= (255, 255, 0)
+
+GRAVITY = 1
+
+class Platform(pygame.sprite.Sprite):
+    def __init__(self, x, y, w, h):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((w, h))
+        self.image.fill(GREEN)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, game):
@@ -31,20 +42,19 @@ class Player(pygame.sprite.Sprite):
         self.game = game
         self.rect.top= WIDTH / 4
         self.rect.left= HEIGHT/4
-#         self.vx = 50
-#         self.vy = 50
-#         self.rect.centerx = WIDTH / 2
-#         self.rect.bottom = HEIGHT - 350
+        self.vx = 0
+        self.vy = 0
+        
     def update(self):
-#         self.vx = 0
-#         self.vy += 1  # GRAVITY
+        self.vx = 0
+        self.vy += GRAVITY
         keys_pressed = pygame.key.get_pressed()
         if keys_pressed[pygame.K_LEFT]:
-            self.rect.x -= 5
+            self.vx = -5
         if keys_pressed[pygame.K_RIGHT]:
-            self.rect.x += 5
-#         self.rect.x += self.vx
-#         self.rect.y += self.vy
+            self.vx = 5
+        self.rect.x += self.vx
+        self.rect.y += self.vy
     
 
 
@@ -60,8 +70,19 @@ class Game:
         
     def new(self):
         self.all_sprites = pygame.sprite.Group()
+        self.plats = pygame.sprite.Group()
+        
         self.player = Player(self)
         self.all_sprites.add(self.player)
+        
+#      (self, x, y, w, h):
+        plat = Platform(0, HEIGHT - 40, WIDTH, 40)
+        self.all_sprites.add(plat)
+        self.plats.add(plat)
+        
+        plat2 = Platform(300, 300, 100, 40)
+        self.all_sprites.add(plat2)
+        self.plats.add(plat2)
 
     def run(self):
         # Game loop
@@ -81,10 +102,15 @@ class Game:
    
     def update(self):
         self.all_sprites.update()
+        
+        hits = pygame.sprite.spritecollide(self.player, self.plats, False)
+        if hits:
+            self.player.vy = 0
+            self.player.rect.bottom = hits[0].rect.top
     
     def draw(self):
          # Draw / render
-        self.screen.fill(GREEN)
+        self.screen.fill(WHITE)
         self.all_sprites.draw(self.screen)
         pygame.display.flip()
 
