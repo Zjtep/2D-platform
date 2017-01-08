@@ -44,6 +44,12 @@ class Player(pygame.sprite.Sprite):
         self.rect.left= HEIGHT/4 +250
         self.vx = 0
         self.vy = 0
+    def jump(self):
+        self.rect.y += 2
+        hits = pygame.sprite.spritecollide(self, self.game.plats, False)
+        self.rect.y -= 2
+        if hits:
+            self.vy = -20
         
     def update(self):
         self.vx = 0
@@ -53,9 +59,11 @@ class Player(pygame.sprite.Sprite):
             self.vx = -5
         if keys_pressed[pygame.K_RIGHT]:
             self.vx = 5
+        if keys_pressed[pygame.K_SPACE]:
+                self.jump()
+                
         self.rect.x += self.vx
         self.rect.y += self.vy
-    
 
 
 class Game:
@@ -64,7 +72,7 @@ class Game:
         pygame.init()
         pygame.mixer.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
-        pygame.display.set_caption("TerribleAria")
+        pygame.display.set_caption("PipedPipper")
         self.clock = pygame.time.Clock()
   
         
