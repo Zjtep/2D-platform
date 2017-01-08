@@ -2,6 +2,7 @@
 import pygame
 import random
 
+TITLE = "PipedPipper"
 WIDTH = 500
 HEIGHT = 500
 FPS = 30
@@ -13,6 +14,7 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 YELLOW= (255, 255, 0)
+PURPLE= (255, 0, 255)
 
 GRAVITY = 1
 
@@ -37,34 +39,57 @@ class Player(pygame.sprite.Sprite):
 
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((40, 60))
-        self.image.fill(BLACK)
+        self.image.fill(PURPLE)
         self.rect = self.image.get_rect()
         self.game = game
         self.rect.top= WIDTH / 4 +2
         self.rect.left= HEIGHT/4 +250
-        self.vx = 0
-        self.vy = 0
+        self.speed_x = 0
+        self.speed_y = 0
     def jump(self):
         self.rect.y += 2
-        hits = pygame.sprite.spritecollide(self, self.game.plats, False)
+        if self.rect.y > 0:
+            hit_list = pygame.sprite.spritecollide(self, self.game.platforms, False)
+                 
         self.rect.y -= 2
-        if hits:
-            self.vy = -20
+        if hit_list:
+            self.speed_y = -20
+            
+    def check_collision(self, dir):
+        if dir == 'x':
+            hit_list = pygame.sprite.spritecollide(self, game.platforms, False)
+            if hit_list:
+                if self.speed_x > 0:
+                    self.rect.right = hit_list[0].rect.left
+                    self.dir = 'l'
+                elif self.speed_x < 0:
+                    self.rect.left = hit_list[0].rect.right
+                    self.dir = 'r'
+                self.speed_x *= -1
+        if dir == 'y':
+            hit_list = pygame.sprite.spritecollide(self, game.platforms, False)
+            if hit_list:
+                if self.speed_y > 0:
+                    self.rect.bottom = hit_list[0].rect.top
+                elif self.speed_y < 0:
+                    self.rect.top = hit_list[0].rect.bottom
+                self.speed_y = 0            
         
     def update(self):
-        self.vx = 0
-        self.vy += GRAVITY
+        self.speed_x = 0
+        self.speed_y += GRAVITY
         keys_pressed = pygame.key.get_pressed()
         if keys_pressed[pygame.K_LEFT]:
-            self.vx = -5
+            self.speed_x = -5
         if keys_pressed[pygame.K_RIGHT]:
-            self.vx = 5
+            self.speed_x = 5
         if keys_pressed[pygame.K_SPACE]:
                 self.jump()
                 
-        self.rect.x += self.vx
-        self.rect.y += self.vy
-
+        self.rect.x += self.speed_x
+        self.check_collision('x')
+        self.rect.y += self.speed_y
+        self.check_collision('y')
 
 class Game:
 # initialize pygame and create window
@@ -72,13 +97,13 @@ class Game:
         pygame.init()
         pygame.mixer.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
-        pygame.display.set_caption("PipedPipper")
+        pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
   
         
     def new(self):
         self.all_sprites = pygame.sprite.Group()
-        self.plats = pygame.sprite.Group()
+        self.platforms = pygame.sprite.Group()
         
         self.player = Player(self)
         self.all_sprites.add(self.player)
@@ -86,11 +111,19 @@ class Game:
 #      (self, x, y, w, h):
         plat = Platform(0, HEIGHT - 40, WIDTH, 40)
         self.all_sprites.add(plat)
-        self.plats.add(plat)
+        self.platforms.add(plat)
         
         plat2 = Platform(300, 300, 100, 40)
         self.all_sprites.add(plat2)
-        self.plats.add(plat2)
+        self.platforms.add(plat2)
+        
+        plat3 = Platform(0, HEIGHT-450, 40, 500)
+        self.all_sprites.add(plat3)
+        self.platforms.add(plat3)
+        
+        plat4 = Platform(200, HEIGHT-150, 40, 100)
+        self.all_sprites.add(plat4)
+        self.platforms.add(plat4)
 
     def run(self):
         # Game loop
@@ -111,9 +144,9 @@ class Game:
     def update(self):
         self.all_sprites.update()
         
-        hits = pygame.sprite.spritecollide(self.player, self.plats, False)
+        hits = pygame.sprite.spritecollide(self.player, self.platforms, False)
         if hits:
-            self.player.vy = 0
+            self.player.speed_y = 0
             self.player.rect.bottom = hits[0].rect.top
     
     def draw(self):
