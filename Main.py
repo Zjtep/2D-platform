@@ -17,11 +17,49 @@ YELLOW= (255, 255, 0)
 PURPLE= (255, 0, 255)
 
 GRAVITY = 1
+
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self, game,x,y,dir):
+
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((10, 5))
+        self.image.fill(WHITE)
+        self.rect = self.image.get_rect()
+        self.game = game
+        self.rect.top= x
+        self.rect.left= y
+        
+        if dir == "right":
+            self.speed_x = 2
+        elif dir =="left":
+            self.speed_x = -2
+#         self.speed_x = 0
+        self.speed_y = 0
+
+            
+    def check_collision(self):
+#         if dir == 'x':
+        hit_list = pygame.sprite.spritecollide(self, game.platforms, False)
+        if hit_list:
+            self.kill()
+#         hit_list = pygame.sprite.spritecollide(self, game.enemys, False)
+#         if hit_list:
+#             print "Bullet killed"
+#             self.kill()        
+           
+        
+    def update(self):    
+        self.rect.x += self.speed_x
+#         self.check_collision('x')
+        self.rect.y += self.speed_y
+        self.check_collision()
+        
+
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, game,x,y):
 
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((40, 40))
+        self.image = pygame.Surface((30, 40))
         self.image.fill(RED)
         self.rect = self.image.get_rect()
         self.game = game
@@ -38,10 +76,10 @@ class Enemy(pygame.sprite.Sprite):
             if hit_list:
                 if self.speed_x > 0:
                     self.rect.right = hit_list[0].rect.left
-                    self.dir = 'l'
+                    self.dir = 'left'
                 elif self.speed_x < 0:
                     self.rect.left = hit_list[0].rect.right
-                    self.dir = 'r'
+                    self.dir = 'right'
                 self.speed_x *= -1
         if dir == 'y':
             hit_list = pygame.sprite.spritecollide(self, game.platforms, False)
@@ -51,6 +89,10 @@ class Enemy(pygame.sprite.Sprite):
                 elif self.speed_y < 0:
                     self.rect.top = hit_list[0].rect.bottom
                 self.speed_y = 0            
+#         hit_list = pygame.sprite.spritecollide(self, game.bullets, False)
+#         if hit_list:
+#             print "enemy killed"
+#             self.kill()
         
     def update(self):
       
@@ -89,7 +131,7 @@ class Player(pygame.sprite.Sprite):
 #         w,h
 
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((40, 60))
+        self.image = pygame.Surface((30, 40))
         self.image.fill(PURPLE)
         self.rect = self.image.get_rect()
         self.game = game
@@ -97,6 +139,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.left= HEIGHT/4 +250
         self.speed_x = 0
         self.speed_y = 0
+        self.dir = "right"
     def jump(self):
         self.rect.y += 2
         if self.rect.y > 0:
@@ -106,16 +149,24 @@ class Player(pygame.sprite.Sprite):
         if hit_list:
             self.speed_y = -20
             
+    def shoot(self):
+
+        bullet = Bullet(self,self.rect.top+10,self.rect.left,self.dir)
+        game.all_sprites.add(bullet)
+        game.bullets.add(bullet)
+
+        
+            
     def check_collision(self, dir):
         if dir == 'x':
             hit_list = pygame.sprite.spritecollide(self, game.platforms, False)
             if hit_list:
                 if self.speed_x > 0:
                     self.rect.right = hit_list[0].rect.left
-                    self.dir = 'l'
+                    self.dir = "left"
                 elif self.speed_x < 0:
                     self.rect.left = hit_list[0].rect.right
-                    self.dir = 'r'
+                    self.dir = "right"
                 self.speed_x *= -1
         if dir == 'y':
             hit_list = pygame.sprite.spritecollide(self, game.platforms, False)
@@ -131,11 +182,15 @@ class Player(pygame.sprite.Sprite):
         self.speed_y += GRAVITY
         keys_pressed = pygame.key.get_pressed()
         if keys_pressed[pygame.K_LEFT]:
+            self.dir = "left"
             self.speed_x = -5
         if keys_pressed[pygame.K_RIGHT]:
+            self.dir = "right"
             self.speed_x = 5
-        if keys_pressed[pygame.K_SPACE]:
-                self.jump()
+        if keys_pressed[pygame.K_z]:
+            self.jump()
+        if keys_pressed[pygame.K_x]:
+            self.shoot()    
                 
         self.rect.x += self.speed_x
         self.check_collision('x')
@@ -156,18 +211,28 @@ class Game:
         self.all_sprites = pygame.sprite.Group()
         
         self.platforms = pygame.sprite.Group()
-        self.enemy = pygame.sprite.Group()
+        self.enemys = pygame.sprite.Group()
+        
+        self.bullets = pygame.sprite.Group()
+        bullet = Bullet(self,200,200,"right")
+        self.all_sprites.add(bullet)
+        self.bullets.add(bullet)
+        
+
+        bullet1 = Bullet(self,10,450,"right")
+        self.all_sprites.add(bullet1)
+        self.bullets.add(bullet1)
         
         self.player = Player(self)
         self.all_sprites.add(self.player)
         
-        enemy = Enemy(self,200,200)
+        enemy = Enemy(self,200,300)
         self.all_sprites.add(enemy)
-        self.enemy.add(enemy)
+        self.enemys.add(enemy)
         
         enemy2 = Enemy(self,200,100)
         self.all_sprites.add(enemy2)
-        self.enemy.add(enemy2)
+        self.enemys.add(enemy2)
 #      (self, x, y, w, h):
         plat = Platform(0, HEIGHT - 10, WIDTH, 10)
         self.all_sprites.add(plat)
@@ -208,14 +273,15 @@ class Game:
     def update(self):
         self.all_sprites.update()
         
-        hits = pygame.sprite.spritecollide(self.player, self.platforms, False)
-        if hits:
-            self.player.speed_y = 0
-            self.player.rect.bottom = hits[0].rect.top
+        hits = pygame.sprite.groupcollide(self.enemys, self.bullets, True, True)
+#         hits = pygame.sprite.spritecollide(self.player, self.platforms, False)
+#         if hits:
+#             self.player.speed_y = 0
+#             self.player.rect.bottom = hits[0].rect.top
     
     def draw(self):
          # Draw / render
-        self.screen.fill(WHITE)
+        self.screen.fill(BLACK)
         self.all_sprites.draw(self.screen)
         pygame.display.flip()
 
