@@ -140,6 +140,9 @@ class Player(pygame.sprite.Sprite):
         self.speed_x = 0
         self.speed_y = 0
         self.dir = "right"
+        self.last = pygame.time.get_ticks()
+        self.can_shoot=300
+        
     def jump(self):
         self.rect.y += 2
         if self.rect.y > 0:
@@ -189,8 +192,13 @@ class Player(pygame.sprite.Sprite):
             self.speed_x = 5
         if keys_pressed[pygame.K_z]:
             self.jump()
+            
         if keys_pressed[pygame.K_x]:
-            self.shoot()    
+            now = pygame.time.get_ticks()
+            if now - self.last >= self.can_shoot:
+                self.last = now
+                self.shoot()    
+            
                 
         self.rect.x += self.speed_x
         self.check_collision('x')
