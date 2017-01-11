@@ -20,9 +20,9 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.left= y
         #g
         if dir == "right":
-            self.speed_x = 7
+            self.speed_x = 12
         elif dir =="left":
-            self.speed_x = -7
+            self.speed_x = -12
 #         self.speed_x = 0
         self.speed_y = 0
 

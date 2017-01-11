@@ -17,8 +17,8 @@ class BasicMob(pygame.sprite.Sprite):
         self.image.fill(RED)
         self.rect = self.image.get_rect()
         self.game = game
-        self.rect.top= x
-        self.rect.left= y
+        self.rect.x = x
+        self.rect.y = y
         self.speed_x = 2
 #         self.speed_x = 0
         self.speed_y = 0

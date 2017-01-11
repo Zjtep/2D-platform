@@ -25,8 +25,8 @@ class Player(pygame.sprite.Sprite):
         self.image.fill(PURPLE)
         self.rect = self.image.get_rect()
         self.game = game
-        self.rect.top= x
-        self.rect.left= y
+        self.rect.x = x
+        self.rect.y = y
         self.speed_x = 0
         self.speed_y = 0
         self.dir = "right"
@@ -34,11 +34,11 @@ class Player(pygame.sprite.Sprite):
         self.can_shoot=300
         
     def jump(self):
-        self.rect.y += 2
+        self.rect.y += 8
         if self.rect.y > 0:
             hit_list = pygame.sprite.spritecollide(self, self.game.platforms, False)
                  
-        self.rect.y -= 2
+        self.rect.y -= 8
         if hit_list:
             self.speed_y = -15
             
