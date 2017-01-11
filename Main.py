@@ -1,9 +1,10 @@
 # Pygame template - skeleton for a new pygame project
 import pygame
 import random
+import pygame._view
 
 TITLE = "PipedPipper"
-WIDTH = 500
+WIDTH = 800
 HEIGHT = 500
 FPS = 30
 
@@ -30,9 +31,9 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.left= y
         
         if dir == "right":
-            self.speed_x = 2
+            self.speed_x = 7
         elif dir =="left":
-            self.speed_x = -2
+            self.speed_x = -7
 #         self.speed_x = 0
         self.speed_y = 0
 
@@ -150,13 +151,18 @@ class Player(pygame.sprite.Sprite):
                  
         self.rect.y -= 2
         if hit_list:
-            self.speed_y = -20
+            self.speed_y = -15
             
     def shoot(self):
-
-        bullet = Bullet(self,self.rect.top+10,self.rect.left,self.dir)
-        game.all_sprites.add(bullet)
-        game.bullets.add(bullet)
+        
+        if self.dir == "left":
+            bullet = Bullet(self,self.rect.top+10,self.rect.left-10,self.dir)
+            game.all_sprites.add(bullet)
+            game.bullets.add(bullet)
+        elif self.dir == "right":
+            bullet = Bullet(self,self.rect.top+10,self.rect.left+30,self.dir)
+            game.all_sprites.add(bullet)
+            game.bullets.add(bullet)
 
         
             
@@ -254,7 +260,7 @@ class Game:
         self.all_sprites.add(plat3)
         self.platforms.add(plat3)
         
-        plat4 = Platform(200, HEIGHT-150, 20, 100)
+        plat4 = Platform(200, HEIGHT-100, 20, 50)
         self.all_sprites.add(plat4)
         self.platforms.add(plat4)
         
