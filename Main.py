@@ -29,7 +29,7 @@ class Bullet(pygame.sprite.Sprite):
         self.game = game
         self.rect.top= x
         self.rect.left= y
-        
+        #g
         if dir == "right":
             self.speed_x = 7
         elif dir =="left":
