@@ -1,4 +1,5 @@
 import pygame
+import GameUtilities
 # define colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -13,8 +14,19 @@ class BasicMob(pygame.sprite.Sprite):
     def __init__(self, game,x,y):
 
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((30, 40))
-        self.image.fill(RED)
+    
+        sprite_sheet = GameUtilities.SpriteSheet("img/enemies_spritesheet.png")
+        self.slime_sprite_left =sprite_sheet.get_image(52, 125, 50,28)
+       
+        scale_x=self.slime_sprite_left.get_width()/2
+        scale_y=self.slime_sprite_left.get_height()/2
+#         self.slime_sprite_left = pygame.transform.scale(self.slime_sprite_left,(scale_x,scale_y))
+        self.slime_sprite_right= pygame.transform.flip(self.slime_sprite_left, True, False)
+        
+        self.image = self.slime_sprite_right
+                
+#         self.image = pygame.Surface((30, 40))
+#         self.image.fill(RED)
         self.rect = self.image.get_rect()
         self.game = game
         self.rect.x = x
@@ -30,9 +42,12 @@ class BasicMob(pygame.sprite.Sprite):
             if hit_list:
                 if self.speed_x > 0:
                     self.rect.right = hit_list[0].rect.left
+                    self.image = self.slime_sprite_left
                     self.dir = 'left'
                 elif self.speed_x < 0:
                     self.rect.left = hit_list[0].rect.right
+                    self.image = self.slime_sprite_right
+                    
                     self.dir = 'right'
                 self.speed_x *= -1
         if dir == 'y':

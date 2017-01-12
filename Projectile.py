@@ -1,4 +1,5 @@
 import pygame
+import GameUtilities
 # define colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -12,8 +13,20 @@ class Bullet(pygame.sprite.Sprite):
     def __init__(self, game,x,y,dir):
 
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((10, 5))
-        self.image.fill(WHITE)
+        
+        sprite_sheet = GameUtilities.SpriteSheet("img/07_effectsAndProjectiles.png")
+        self.bullet_sprite =sprite_sheet.get_image(0, 660, 64,20)
+    
+        scale_x=self.bullet_sprite.get_width()/4
+        scale_y=self.bullet_sprite.get_height()/4
+        self.bullet_sprite = pygame.transform.scale(self.bullet_sprite,(scale_x,scale_y))
+
+        
+        self.image = self.bullet_sprite        
+        
+        
+#         self.image = pygame.Surface((10, 5))
+#         self.image.fill(WHITE)
         self.rect = self.image.get_rect()
         self.game = game
         self.rect.top= x

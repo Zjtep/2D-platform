@@ -1,5 +1,6 @@
 import pygame
 import Projectile
+import GameUtilities
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -10,6 +11,8 @@ PURPLE= (255, 0, 255)
 
 GRAVITY = 1
 
+
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, game,x,y):
 #         x,y
@@ -19,10 +22,21 @@ class Player(pygame.sprite.Sprite):
 #         center, centerx, centery
 #         size, width, height
 #         w,h
-
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((30, 40))
-        self.image.fill(PURPLE)
+        
+
+  
+        sprite_sheet = GameUtilities.SpriteSheet("img/p3_spritesheet.png")
+        self.player_sprite_right =sprite_sheet.get_image(73, 0, 72,97)
+       
+        scale_x=self.player_sprite_right.get_width()/2
+        scale_y=self.player_sprite_right.get_height()/2
+        self.player_sprite_right = pygame.transform.scale(self.player_sprite_right,(scale_x,scale_y))
+        self.player_sprite_left= pygame.transform.flip(self.player_sprite_right, True, False)
+        
+        self.image = self.player_sprite_right
+#         self.image = pygame.Surface((30, 40))
+#         self.image.fill(PURPLE)
         self.rect = self.image.get_rect()
         self.game = game
         self.rect.x = x
@@ -45,11 +59,11 @@ class Player(pygame.sprite.Sprite):
     def shoot(self):
         
         if self.dir == "left":
-            bullet = Projectile.Bullet(self,self.rect.top+10,self.rect.left-10,self.dir)
+            bullet = Projectile.Bullet(self,self.rect.top+17,self.rect.left-10,self.dir)
             self.game.all_sprites.add(bullet)
             self.game.bullets.add(bullet)
         elif self.dir == "right":
-            bullet = Projectile.Bullet(self,self.rect.top+10,self.rect.left+30,self.dir)
+            bullet = Projectile.Bullet(self,self.rect.top+17,self.rect.left+30,self.dir)
             self.game.all_sprites.add(bullet)
             self.game.bullets.add(bullet)
 
@@ -81,9 +95,11 @@ class Player(pygame.sprite.Sprite):
         keys_pressed = pygame.key.get_pressed()
         if keys_pressed[pygame.K_LEFT]:
             self.dir = "left"
+            self.image = self.player_sprite_left
             self.speed_x = -5
         if keys_pressed[pygame.K_RIGHT]:
             self.dir = "right"
+            self.image = self.player_sprite_right
             self.speed_x = 5
         if keys_pressed[pygame.K_z]:
 #             helloo=hello.Bullet(self,self.rect.top+10,self.rect.left+30,self.dir)

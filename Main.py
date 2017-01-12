@@ -25,13 +25,17 @@ GRAVITY = 1
 
 
 class Platform(pygame.sprite.Sprite):
-    def __init__(self, x, y, w, h):
+    def __init__(self,plat_image, x, y, w, h):
         pygame.sprite.Sprite.__init__(self)
+
+        plat_image = pygame.transform.scale(plat_image,(16,16))
         self.image = pygame.Surface((w, h))
-        self.image.fill(GREEN)
+        self.image = plat_image
+#         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+         
 
 
 class Game:
@@ -42,8 +46,9 @@ class Game:
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
         pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
+        self.BACKGROUND = pygame.image.load("img/background01.png")
 #         self.platform_list = []
-        
+       
     def new(self):
                 
         self.all_sprites = pygame.sprite.Group()
@@ -54,39 +59,58 @@ class Game:
         
         x = y = 0
         map01 = [
-            "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
-            "P                                P",
-            "P                                P",
-            "P                                P",
-            "P                                P",
-            "P                 PP             P",
-            "P                      PPPPP     P",
-            "P   PP       P                   P",
-            "P                                P",
-            "P                PPPPP           P",
-            "PPE                              P",
-            "PPP       PPPPP                  P",
-            "PPPP                     PPPPPPPPP",
-            "PPPPP                            P",
-            "PPPPPPP E                        P",
-            "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",]
+            "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+            "P                                                                     P",
+            "P                                                                     P",
+            "P                                                                     P",
+            "P                                  E                                  P",
+            "P                                                                     P",  
+            "P                                                                     P",            
+            "P                                                                     P",
+            "P                   E       GGG                   GGGG                P",
+            "P                                                                     P",
+            "P                                                                     P",
+            "P                                                                     P",  
+            "P                                                                     P",
+            "P                                                                     P",                     
+            "P                          GGGGG                                      P",
+            "P                                                                     P",
+            "P                                      E                              P",                           
+            "P                 E                                                   P",
+            "P   GG                                                                P",
+            "P                                                                     P",
+            "P                       GGGGG                                 PPPPPPPPP",
+            "PG                                                                    P",
+            "PPG       GGGGG                                                       P",
+            "PPPG                                                                  P",
+            "PPPPG                                                                 P",
+            "PPPPPPG      E                                                        P",
+            "PPPPPPPGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGP",]
         # build the level
+        
+        grass_image = pygame.image.load("img/grass.png").convert()
+        grass_center_image = pygame.image.load("img/grasscenter.png").convert()
         for row in map01:
             for col in row:
                 if col == "P":
-                    p = Platform(x, y,32,32)
+                    p = Platform(grass_center_image,x, y,16,16)
                     self.all_sprites.add(p)
                     self.platforms.add(p)
 #                     self.platform_list.append(p)
-                    
+
+                if col == "G":
+                    p = Platform(grass_image,x, y,16,16)
+                    self.all_sprites.add(p)
+                    self.platforms.add(p)
+#                     self.platform_list.append(p)                   
                 if col == "E":
                     e = Enemy.BasicMob(self,x,y)
                     self.all_sprites.add(e)
                     self.enemys.add(e)
 #                     self.platform_list.append(e)
                     
-                x += 32
-            y += 32
+                x += 16
+            y += 16
             x = 0        
               
 #         bullet = Projectile.Bullet(self,200,200,"right")
@@ -156,7 +180,11 @@ class Game:
     
     def draw(self):
          # Draw / render
-        self.screen.fill(BLACK)
+      
+        rect = self.BACKGROUND.get_rect()
+        self.screen.blit(self.BACKGROUND,rect)
+#         self.screen.fill(BLACK)
+
         self.all_sprites.draw(self.screen)
         pygame.display.flip()
 
