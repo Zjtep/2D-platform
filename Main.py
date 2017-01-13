@@ -6,10 +6,13 @@ import pygame._view
 import Projectile
 import Enemy
 import Player
+import GameUtilities
 
 TITLE = "PipedPipper"
 WIN_WIDTH = 800
-WIN_HEIGHT = 600
+WIN_HEIGHT = 640
+HALF_WIDTH = int(WIN_WIDTH / 2)
+HALF_HEIGHT = int(WIN_HEIGHT / 2)
 FPS = 30
 
 # define colors
@@ -22,13 +25,41 @@ YELLOW= (255, 255, 0)
 PURPLE= (255, 0, 255)
 
 GRAVITY = 1
+TILE_SIZE=32
+
+class Camera(object):
+    def __init__(self, camera_func, width, height):
+        self.camera_func = camera_func
+        self.state = pygame.Rect(0, 0, width, height)
+
+    def apply(self, target):
+        return target.rect.move(self.state.topleft)
+
+    def update(self, target):
+        self.state = self.camera_func(self.state, target.rect)
+
+def simple_camera(camera, target_rect):
+    l, t, _, _ = target_rect
+    _, _, w, h = camera
+    return pygame.Rect(-l+HALF_WIDTH, -t+HALF_HEIGHT, w, h)
+
+def complex_camera(camera, target_rect):
+    l, t, _, _ = target_rect
+    _, _, w, h = camera
+    l, t, _, _ = -l+HALF_WIDTH, -t+HALF_HEIGHT, w, h
+  
+    l = min(0, l)                           # stop scrolling at the left edge
+    l = max(-(camera.width-WIN_WIDTH), l)   # stop scrolling at the right edge
+    t = max(-(camera.height-WIN_HEIGHT), t) # stop scrolling at the bottom
+    t = min(0, t)                           # stop scrolling at the top
+    return pygame.Rect(l, t, w, h)
 
 
 class Platform(pygame.sprite.Sprite):
     def __init__(self,plat_image, x, y, w, h):
         pygame.sprite.Sprite.__init__(self)
 
-        plat_image = pygame.transform.scale(plat_image,(16,16))
+        plat_image = pygame.transform.scale(plat_image,(TILE_SIZE,TILE_SIZE))
         self.image = pygame.Surface((w, h))
         self.image = plat_image
 #         self.image.fill(GREEN)
@@ -63,17 +94,34 @@ class Game:
             "P                                                                     P",
             "P                                                                     P",
             "P                                                                     P",
-            "P                                  E                                  P",
+            "P                                                                     P",
+            "P                                                                     P",
+            "P                                                                     P",
+            "P                                                                     P",
+            "P                                                                     P",
+            "P                                                                     P",
+            "P                                                                     P",
+            "P                                                                     P",
             "P                                                                     P",  
             "P                                                                     P",            
             "P                                                                     P",
-            "P                   E       GGG                   GGGG                P",
+            "P                                                                     P",
+            "P                                                                     P",
+            "P                                                                     P",
+            "P                                                                     P",
+            "P                                                                     P",
+            "P                                                                     P",
+            "P                                                                     P",
+            "P                                                                     P",  
+            "P                                                                     P",            
+            "P                                                                     P",
+            "P                   E                 GGG                 GGGG        P",
             "P                                                                     P",
             "P                                                                     P",
             "P                                                                     P",  
             "P                                                                     P",
             "P                                                                     P",                     
-            "P                          GGGGG                                      P",
+            "P                                  GGGGG         GGGGG                P",
             "P                                                                     P",
             "P                                      E                              P",                           
             "P                 E                                                   P",
@@ -93,13 +141,13 @@ class Game:
         for row in map01:
             for col in row:
                 if col == "P":
-                    p = Platform(grass_center_image,x, y,16,16)
+                    p = Platform(grass_center_image,x, y,TILE_SIZE,TILE_SIZE)
                     self.all_sprites.add(p)
                     self.platforms.add(p)
 #                     self.platform_list.append(p)
 
                 if col == "G":
-                    p = Platform(grass_image,x, y,16,16)
+                    p = Platform(grass_image,x, y,TILE_SIZE,TILE_SIZE)
                     self.all_sprites.add(p)
                     self.platforms.add(p)
 #                     self.platform_list.append(p)                   
@@ -109,18 +157,13 @@ class Game:
                     self.enemys.add(e)
 #                     self.platform_list.append(e)
                     
-                x += 16
-            y += 16
+                x += TILE_SIZE
+            y += TILE_SIZE
             x = 0        
               
-#         bullet = Projectile.Bullet(self,200,200,"right")
-#         self.all_sprites.add(bullet)
-#         self.bullets.add(bullet)
-        
-
-#         bullet1 = Projectile.Bullet(self,10,450,"right")
-#         self.all_sprites.add(bullet1)
-#         self.bullets.add(bullet1)
+        total_level_width  = len(map01[0])*TILE_SIZE
+        total_level_height = len(map01)*TILE_SIZE
+        self.camera1 = Camera(simple_camera, total_level_width, total_level_height)
         
         self.player1 = Player.Player(self,50,50)
         self.all_sprites.add(self.player1)
@@ -140,28 +183,6 @@ class Game:
 #         plat2 = Platform(300, 300, 100, 10)
 #         self.all_sprites.add(plat2)
 #         self.platforms.add(plat2)
-#         
-#         plat3 = Platform(0, WIN_HEIGHT-450, 10, 500)
-#         self.all_sprites.add(plat3)
-#         self.platforms.add(plat3)
-#         
-#         plat4 = Platform(200, WIN_HEIGHT-100, 20, 50)
-#         self.all_sprites.add(plat4)
-#         self.platforms.add(plat4)
-#         
-#         plat5 = Platform(WIN_WIDTH-10, WIN_HEIGHT-450, 10, 500)
-#         self.all_sprites.add(plat5)
-#         self.platforms.add(plat5)
-
-    def run(self):
-        # Game loop
-        self.running = True
-        self.new()
-        while self.running:
-             self.clock.tick(FPS)
-             self.events()
-             self.update()
-             self.draw()
     
     def events(self):
         for event in pygame.event.get():
@@ -181,12 +202,26 @@ class Game:
     def draw(self):
          # Draw / render
       
-        rect = self.BACKGROUND.get_rect()
-        self.screen.blit(self.BACKGROUND,rect)
-#         self.screen.fill(BLACK)
+#         rect = self.BACKGROUND.get_rect()
+#         self.screen.blit(self.BACKGROUND,rect)
+        self.screen.fill(BLACK)
 
-        self.all_sprites.draw(self.screen)
+        self.camera1.update(self.player1)
+        for e in self.all_sprites:
+            self.screen.blit(e.image, self.camera1.apply(e))
+        
+#         self.all_sprites.draw(self.screen)
         pygame.display.flip()
+        
+    def run(self):
+        # Game loop
+        self.running = True
+        self.new()
+        while self.running:
+             self.clock.tick(FPS)
+             self.events()
+             self.update()
+             self.draw()        
 
 game = Game()
 while True:

@@ -17,8 +17,8 @@ class Bullet(pygame.sprite.Sprite):
         sprite_sheet = GameUtilities.SpriteSheet("img/07_effectsAndProjectiles.png")
         self.bullet_sprite =sprite_sheet.get_image(0, 660, 64,20)
     
-        scale_x=self.bullet_sprite.get_width()/4
-        scale_y=self.bullet_sprite.get_height()/4
+        scale_x=self.bullet_sprite.get_width()/2
+        scale_y=self.bullet_sprite.get_height()/2
         self.bullet_sprite = pygame.transform.scale(self.bullet_sprite,(scale_x,scale_y))
 
         
@@ -33,9 +33,9 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.left= y
         #g
         if dir == "right":
-            self.speed_x = 12
+            self.speed_x = 20
         elif dir =="left":
-            self.speed_x = -12
+            self.speed_x = -20
 #         self.speed_x = 0
         self.speed_y = 0
 

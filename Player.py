@@ -27,10 +27,10 @@ class Player(pygame.sprite.Sprite):
 
   
         sprite_sheet = GameUtilities.SpriteSheet("img/p3_spritesheet.png")
-        self.player_sprite_right =sprite_sheet.get_image(73, 0, 72,97)
+        self.player_sprite_right =sprite_sheet.get_image(67, 196, 66,92)
        
-        scale_x=self.player_sprite_right.get_width()/2
-        scale_y=self.player_sprite_right.get_height()/2
+        scale_x=int(self.player_sprite_right.get_width())
+        scale_y=int(self.player_sprite_right.get_height())
         self.player_sprite_right = pygame.transform.scale(self.player_sprite_right,(scale_x,scale_y))
         self.player_sprite_left= pygame.transform.flip(self.player_sprite_right, True, False)
         
@@ -54,16 +54,16 @@ class Player(pygame.sprite.Sprite):
                  
         self.rect.y -= 8
         if hit_list:
-            self.speed_y = -15
+            self.speed_y = -20
             
     def shoot(self):
         
         if self.dir == "left":
-            bullet = Projectile.Bullet(self,self.rect.top+17,self.rect.left-10,self.dir)
+            bullet = Projectile.Bullet(self,self.rect.top+33,self.rect.left-10,self.dir)
             self.game.all_sprites.add(bullet)
             self.game.bullets.add(bullet)
         elif self.dir == "right":
-            bullet = Projectile.Bullet(self,self.rect.top+17,self.rect.left+30,self.dir)
+            bullet = Projectile.Bullet(self,self.rect.top+33,self.rect.left+30,self.dir)
             self.game.all_sprites.add(bullet)
             self.game.bullets.add(bullet)
 
@@ -96,11 +96,11 @@ class Player(pygame.sprite.Sprite):
         if keys_pressed[pygame.K_LEFT]:
             self.dir = "left"
             self.image = self.player_sprite_left
-            self.speed_x = -5
+            self.speed_x = -15
         if keys_pressed[pygame.K_RIGHT]:
             self.dir = "right"
             self.image = self.player_sprite_right
-            self.speed_x = 5
+            self.speed_x = 15
         if keys_pressed[pygame.K_z]:
 #             helloo=hello.Bullet(self,self.rect.top+10,self.rect.left+30,self.dir)
 #             game.all_sprites.add(helloo)

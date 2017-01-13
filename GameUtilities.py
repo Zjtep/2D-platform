@@ -20,3 +20,6 @@ class SpriteSheet:
 #         draw_me.set_colorkey([0, 0, 0]) #Make that shit transparent
         
         return draw_me
+    
+class Camera():
+    pass
