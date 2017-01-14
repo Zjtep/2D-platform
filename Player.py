@@ -25,21 +25,8 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         
 
-        #GET SPRITES  
-        sprite_sheet = GameUtilities.SpriteSheet("img/p3_spritesheet.png")
-        self.sprite_stand_right =sprite_sheet.get_image(67, 196, 66,92)
-        
-        #idle stand left/right
-        scale_x=int(self.sprite_stand_right.get_width())
-        scale_y=int(self.sprite_stand_right.get_height())
-        self.sprite_stand_right = pygame.transform.scale(self.sprite_stand_right,(scale_x,scale_y))
 
-        self.sprite_stand_left= pygame.transform.flip(self.sprite_stand_right, True, False)
-        
-        #jumping
-        self.sprite_jump_right =sprite_sheet.get_image(438, 93, 67,94)
-        self.sprite_jump_left= pygame.transform.flip(self.sprite_jump_right, True, False)
-        
+        self.load_sprites()
         self.image = self.sprite_stand_right
 #         self.image = pygame.Surface((30, 40))
 #         self.image.fill(PURPLE)
@@ -54,6 +41,22 @@ class Player(pygame.sprite.Sprite):
         self.last = pygame.time.get_ticks()
         self.can_shoot=300
         
+    def load_sprites(self):
+
+        sprite_sheet = GameUtilities.SpriteSheet("img/p3_spritesheet.png")
+        self.sprite_stand_right =sprite_sheet.get_image(67, 196, 66,92)
+        
+        #idle stand left/right
+        scale_x=int(self.sprite_stand_right.get_width())
+        scale_y=int(self.sprite_stand_right.get_height())
+        self.sprite_stand_right = pygame.transform.scale(self.sprite_stand_right,(scale_x,scale_y))
+
+        self.sprite_stand_left= pygame.transform.flip(self.sprite_stand_right, True, False)
+        
+        #jumping
+        self.sprite_jump_right =sprite_sheet.get_image(438, 93, 67,94)
+        self.sprite_jump_left= pygame.transform.flip(self.sprite_jump_right, True, False)    
+    
     def jump(self):
         if self.dir == "left":
             self.image = self.sprite_jump_left
