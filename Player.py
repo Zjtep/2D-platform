@@ -85,14 +85,16 @@ class Player(pygame.sprite.Sprite):
 #             print"we walking"
         if self.speed_y > 0 and not self.character_status=="jumping":
             self.character_status=="jumping"
-            
+        
+        #if idle stop moving    
         if self.character_status=="idle":
                 if self.character_direction == 'right':
                     self.image = self.sprite_stand_right
                 else:
-                    self.image = self.sprite_stand_left           
-
-        if self.character_status == "walking":
+                    self.image = self.sprite_stand_left      
+                         
+        #if working start walking animation
+        if self.character_status == "walking" and not self.character_status=="jumping":
 #         if self.speed_x != 0 and self.speed_y == 0:
             if now - self.last_update > 75:
                 self.last_update = now
@@ -100,9 +102,14 @@ class Player(pygame.sprite.Sprite):
                 if self.character_direction == 'right':
                     self.image = self.sprite_walk_right[self.current_frame]
                 else:
-                    pass
-                    self.image = self.sprite_walk_left[self.current_frame]
         
+                    self.image = self.sprite_walk_left[self.current_frame]
+        #if jumping
+        elif self.speed_y != 0:
+            if self.character_direction == 'right':
+                self.image = self.sprite_jump_right
+            else:
+                self.image = self.sprite_jump_left   
         
     
     def jump(self):
@@ -117,6 +124,7 @@ class Player(pygame.sprite.Sprite):
                  
         self.rect.y -= 8
         if hit_list:
+            self.character_status == "jumping"
             self.speed_y = -20
             
     def shoot(self):
@@ -138,15 +146,16 @@ class Player(pygame.sprite.Sprite):
             if hit_list:
                 if self.speed_x > 0:
                     self.rect.right = hit_list[0].rect.left
-                    self.character_direction = "left"
+#                     self.character_direction = "left"
                 elif self.speed_x < 0:
                     self.rect.left = hit_list[0].rect.right
-                    self.character_direction = "right"
+#                     self.character_direction = "right"
                 self.speed_x *= -1
         if character_direction == 'y':
             hit_list = pygame.sprite.spritecollide(self, self.game.platforms, False)
             if hit_list:
                 if self.speed_y > 0:
+#                     self.character_status="jumping"
                     self.rect.bottom = hit_list[0].rect.top
                 elif self.speed_y < 0:
                     self.rect.top = hit_list[0].rect.bottom
