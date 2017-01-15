@@ -18,8 +18,8 @@ class BasicMob(pygame.sprite.Sprite):
         sprite_sheet = GameUtilities.SpriteSheet("img/enemies_spritesheet.png")
         self.slime_sprite_left =sprite_sheet.get_image(52, 125, 50,28)
        
-        scale_x=self.slime_sprite_left.get_width()*2
-        scale_y=self.slime_sprite_left.get_height()*2
+        scale_x=self.slime_sprite_left.get_width()
+        scale_y=self.slime_sprite_left.get_height()
         self.slime_sprite_left = pygame.transform.scale(self.slime_sprite_left,(scale_x,scale_y))
         self.slime_sprite_right= pygame.transform.flip(self.slime_sprite_left, True, False)
         

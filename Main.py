@@ -23,6 +23,7 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 YELLOW= (255, 255, 0)
 PURPLE= (255, 0, 255)
+BABY_BLUE= (204,255,255)
 
 GRAVITY = 1
 TILE_SIZE=32
@@ -204,7 +205,7 @@ class Game:
       
 #         rect = self.BACKGROUND.get_rect()
 #         self.screen.blit(self.BACKGROUND,rect)
-        self.screen.fill(BLACK)
+        self.screen.fill(BABY_BLUE)
 
         self.camera1.update(self.player1)
         for e in self.all_sprites:
