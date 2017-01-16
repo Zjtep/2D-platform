@@ -94,7 +94,12 @@ class Player(pygame.sprite.Sprite):
                     self.image = self.sprite_stand_left      
                          
         #if working start walking animation
-        if self.character_status == "walking" and not self.character_status=="jumping":
+        if self.speed_y != 0:
+            if self.character_direction == 'right':
+                self.image = self.sprite_jump_right
+            else:
+                self.image = self.sprite_jump_left   
+        elif self.character_status == "walking" and not self.character_status=="jumping":
 #         if self.speed_x != 0 and self.speed_y == 0:
             if now - self.last_update > 75:
                 self.last_update = now
@@ -105,11 +110,7 @@ class Player(pygame.sprite.Sprite):
         
                     self.image = self.sprite_walk_left[self.current_frame]
         #if jumping
-        elif self.speed_y != 0:
-            if self.character_direction == 'right':
-                self.image = self.sprite_jump_right
-            else:
-                self.image = self.sprite_jump_left   
+        
         
     
     def jump(self):
