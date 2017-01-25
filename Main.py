@@ -101,10 +101,10 @@ class Game:
             "P                                                                     P",
             "P                                                                     P",
             "P                                                                     P",
-            "P                                          GGG                        P",
+            "P                                          GGGG                       P",
             "P                                                                     P",
             "P                                                                     P",  
-            "P                                 GGGG                                P",            
+            "P                                GGGGG                                P",            
             "P                                                                     P",
             "P                                                                     P",
             "P                                                                     P",
@@ -128,7 +128,7 @@ class Game:
             "P                 E                                                   P",
             "P   GG                                                                P",
             "P                                                                     P",
-            "P                       GGGGG                                 PPPPPPPPP",
+            "P                       GGGGG                                 GGGGGGGGP",
             "PG                                                                    P",
             "PPG       GGGGG                                                       P",
             "PPPG                                                                  P",
@@ -190,11 +190,22 @@ class Game:
             if event.type == pygame.QUIT:
                  pygame.quit()
                  quit()
-   
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    self.player1.jump()
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_SPACE:
+                    self.player1.jump_cut()    
+                      
     def update(self):
         self.all_sprites.update()
         hits = pygame.sprite.groupcollide(self.platforms, self.bullets, False, True)
         hits = pygame.sprite.groupcollide(self.enemys, self.bullets, True, True)
+        
+#         hits = pygame.sprite.spritecollide(self.player1, self.enemys,False, pygame.sprite.collide_mask)
+#         if hits:
+#             self.player1.hit_enemy()
+        
 #         hits = pygame.sprite.spritecollide(self.player, self.platforms, False)
 #         if hits:
 #             self.player.speed_y = 0

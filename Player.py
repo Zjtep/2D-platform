@@ -10,6 +10,7 @@ YELLOW= (255, 255, 0)
 PURPLE= (255, 0, 255)
 
 GRAVITY = 1
+TOTALLIFE=5
 
 
 
@@ -41,8 +42,9 @@ class Player(pygame.sprite.Sprite):
         self.speed_y = 0
         self.character_direction = "right"
         self.character_status ="idle"
-        self.last = pygame.time.get_ticks()
+        self.last_game_tick = pygame.time.get_ticks()
         self.can_shoot=300
+        self.cur_life=TOTALLIFE
         
     def load_sprites(self):
         
@@ -78,13 +80,15 @@ class Player(pygame.sprite.Sprite):
 
         now = pygame.time.get_ticks()
         
-        if self.speed_x == 0 and not self.character_status=="jumping":
+        if self.speed_y == 0 and not self.character_status=="jumping":
             self.character_status="idle"
+        if self.speed_y > 0:
+            self.character_status=="jumping"  
+            print"we jumping"         
         if self.speed_x != 0 and not self.character_status=="jumping":
             self.character_status = "walking"
-#             print"we walking"
-        if self.speed_y > 0 and not self.character_status=="jumping":
-            self.character_status=="jumping"
+            print"we walking"
+
         
         #if idle stop moving    
         if self.character_status=="idle":
@@ -93,12 +97,13 @@ class Player(pygame.sprite.Sprite):
                 else:
                     self.image = self.sprite_stand_left      
                          
-        #if working start walking animation
+        #if jumping
         if self.speed_y != 0:
             if self.character_direction == 'right':
                 self.image = self.sprite_jump_right
             else:
                 self.image = self.sprite_jump_left   
+        #if working start walking animation
         elif self.character_status == "walking" and not self.character_status=="jumping":
 #         if self.speed_x != 0 and self.speed_y == 0:
             if now - self.last_update > 75:
@@ -109,8 +114,23 @@ class Player(pygame.sprite.Sprite):
                 else:
         
                     self.image = self.sprite_walk_left[self.current_frame]
-        #if jumping
-        
+    
+    def hit_enemy(self):
+        # if you just hit, can't immediately hit again
+        if not self.hit:
+            self.hit = True
+            self.jumping = True
+            self.life -= 1
+            self.hit_time = pygame.time.get_ticks()
+            if self.dir == 'left':
+                self.speed_x = self.speed
+            else:
+                self.speed_x = -self.speed
+            # could hit from above or below
+            if self.speed_y >= 0:
+                self.speed_y = -12
+            else:
+                self.speed_y = 8        
         
     
     def jump(self):
@@ -127,7 +147,11 @@ class Player(pygame.sprite.Sprite):
         if hit_list:
             self.character_status == "jumping"
             self.speed_y = -20
-            
+    def jump_cut(self):
+        if self.jump:
+            if self.speed_y < -3:
+                self.speed_y = -3         
+                     
     def shoot(self):
         
         if self.character_direction == "left":
@@ -175,18 +199,16 @@ class Player(pygame.sprite.Sprite):
             self.character_direction = "right"
 #             self.image = self.sprite_stand_right
             self.speed_x = 15
-        if keys_pressed[pygame.K_z]:
-#             helloo=hello.Bullet(self,self.rect.top+10,self.rect.left+30,self.character_direction)
-#             game.all_sprites.add(helloo)
-#             game.bullets.add(helloo)
             
+#             
+        if keys_pressed[pygame.K_z]:
             self.jump()
             
-        if keys_pressed[pygame.K_x]:
-            now = pygame.time.get_ticks()
-            if now - self.last >= self.can_shoot:
-                self.last = now
-                self.shoot()    
+#         if keys_pressed[pygame.K_x]:
+#             now = pygame.time.get_ticks()
+#             if now - self.last_game_tick >= self.can_shoot:
+#                 self.last_game_tick = now
+#                 self.shoot()    
             
                 
         self.rect.x += self.speed_x
